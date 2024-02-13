@@ -1,6 +1,5 @@
 import React from 'react'
-import Navbar from '../Navbar'
-import { categories } from '@/constants'
+import { categories, topics } from '@/constants'
 
 type PageParams = {
   params: {
@@ -9,27 +8,43 @@ type PageParams = {
 }
 
 const CategoryPage = ({ params: { category } }: PageParams) => {
-  if (!categories.map(x => x.path).includes(category)) {
+  const categoryData = categories.find(x => x.path === category)
+
+  if (!categoryData) {
     return (
       <>
-        <div className="absolute w-screen h-screen bg-slate-200 -z-10"></div>
-        <Navbar />
         <main className="w-full h-full grid place-items-center">
-          <h2 className="text-black font-bold text-3xl mt-10">Category {category} not found!</h2>
+          <h2 className="text-black font-bold text-3xl mt-10">Category {category} not found</h2>
           <a className='pt-3' href='/'>Return to main page</a>
         </main>
       </>
     )
   }
+
+  const categoryTopics = topics.filter(x => x.parent === categoryData.name);
+
   return (
     <>
-      <div className="absolute w-screen h-screen bg-slate-200 -z-10"></div>
-      <Navbar />
       <main className="w-full h-full grid place-items-center">
-        <h2 className="text-black font-bold text-3xl mt-10">{category}</h2>
-        <div className="flex justify-center items-center gap-5 mt-5">
+        <h2 className="text-black font-bold text-3xl mt-10">{categoryData.name}</h2>
+        <p>Explore these topics</p>
 
+        <div className="flex justify-center items-center gap-5 mt-7">
+
+          {categoryTopics.map((categoryTopic) => (
+            <div className="card bg-slate-100 w-72 shadow-xl">
+              <figure><img src={categoryTopic.image} alt={categoryTopic.name} /></figure>
+              <div className="card-body">
+                <h3 className="card-title text-black">{categoryTopic.name}</h3>
+                <p className="text-slate-600">Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.</p>
+                <div className="card-actions justify-end">
+                  <a href={categoryTopic.path} className="btn btn-primary text-white">Explore</a>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
+
       </main>
     </>
   )
