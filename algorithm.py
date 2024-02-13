@@ -78,8 +78,8 @@ def compare(patient, advisor):
 
 
 
-users = [Chat("buss", "ing")]
-chats = [ Chat("buss", "ing"),  Chat("buss", "ing"),  Chat("buss", "ing")]
+users = []
+chats = []
 
 
 # Users is a list of objects of class Person, which need to be added to the file backup.json. Write a function SaveData that saves the users list to a file called backup.json. The function should take no arguments and return nothing.
@@ -128,3 +128,4 @@ def main():
         if users[0].ispatient != users[1].ispatient and users[0].requestUsers[0] == users[1]:
             users[0].acceptRequest(users[1]) 
     """
+    SaveData()
