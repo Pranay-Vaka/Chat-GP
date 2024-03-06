@@ -2,13 +2,14 @@ import json
 
 class message:
     def __init__(self, message, owner):
+
         self.message = message
         self.owner = owner
-    
+
 class Person:
     def __init__(self, name, condition, age, languages, nationality, phoneNumber, ispatient, city):
         self.ispatient: bool = ispatient
-        self.name: str = name 
+        self.name: str = name
         self.condition: str = condition
         self.age: int = age
         self.languages: list[str] = languages
@@ -37,18 +38,18 @@ class Person:
         self.requestUsers.remove(request)
         chat = Chat(self, request)
         return chat
-    
+
     def rankUsers(self, users):
         # sort the users by the compare function
         users.sort(key=compare(self, users), reverse=True)
         return users
-    
+
 class Chat:
     def __init__(self, patient, advisor):
         self.patient = patient
         self.advisor = advisor
         self.messages = []
-    
+
     def addMessage(self, message):
         self.messages.append(message)
 
@@ -56,24 +57,24 @@ def compare(patient, advisor):
     score = 0
     if patient.condition == advisor.condition:
         score += 550
-    
+
     for i in patient.languages:
         for a in advisor.languages:
             if a == i:
                 score += 150
-    
+
     if patient.age - advisor.age < 5:
         score += 150
     elif patient.age - advisor.age < 10:
         score += 75
-    elif patient.age - advisor.age < 20:    
+    elif patient.age - advisor.age < 20:
         score += 50
-    else: 
+    else:
         score += 25
 
     if patient.city == advisor.city:
         score += 150
-    
+
     return score
 
 
@@ -84,8 +85,8 @@ chats = []
 
 # Users is a list of objects of class Person, which need to be added to the file backup.json. Write a function SaveData that saves the users list to a file called backup.json. The function should take no arguments and return nothing.
 
-def SaveData(): 
-    with open('users.json', 'w') as file:     
+def SaveData():
+    with open('users.json', 'w') as file:
         #upload the chats list to the file
         json.dump(users, file, default=lambda o: o.__dict__, indent=4)
     with open('chats.json', 'w') as file:
@@ -107,9 +108,9 @@ def main():
     print(chats)
     print(users)
     request = ""
-    
-    """ 
-    if request == "send" and user == x and chat == y: 
+
+    """
+    if request == "send" and user == x and chat == y:
         if users[x].isPatient and chat.patient == users[x] or not users[x].isPatient and chat.advisor == users[x]:
             users[x].sendMessage("Hello", chats[y])
     elif request == "leave":
@@ -126,6 +127,6 @@ def main():
             users[x].retractRequest(users[y])
     elif request == "accept":
         if users[0].ispatient != users[1].ispatient and users[0].requestUsers[0] == users[1]:
-            users[0].acceptRequest(users[1]) 
+            users[0].acceptRequest(users[1])
     """
     SaveData()
