@@ -2,19 +2,26 @@ import json
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class Forum(models.Model):
+    forums = models.Manager()
     name = models.CharField(max_length=100)
     category = models.CharField(max_length=100)
     description = models.CharField(max_length=1000)
 
+
 class Message(models.Model):
+    messages = models.Manager()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     forum = models.ForeignKey(Forum, on_delete=models.CASCADE)
     content = models.CharField(max_length=4096)
     time_stamp = models.DateTimeField(auto_now_add=True)
 
+
 class Person:
-    def __init__(self, name, condition, age, languages, nationality, phoneNumber, ispatient, city):
+    def __init__(
+        self, name, condition, age, languages, nationality, phoneNumber, ispatient, city
+    ):
         self.ispatient: bool = ispatient
         self.name: str = name
         self.condition: str = condition
@@ -51,6 +58,7 @@ class Person:
         users.sort(key=compare(self, users), reverse=True)
         return users
 
+
 class Chat:
     def __init__(self, patient, advisor):
         self.patient = patient
@@ -59,6 +67,7 @@ class Chat:
 
     def addMessage(self, message):
         self.messages.append(message)
+
 
 def compare(patient, advisor):
     score = 0
@@ -85,31 +94,33 @@ def compare(patient, advisor):
     return score
 
 
-
 users = []
 chats = []
 
 
 # Users is a list of objects of class Person, which need to be added to the file backup.json. Write a function SaveData that saves the users list to a file called backup.json. The function should take no arguments and return nothing.
 
+
 def SaveData():
-    with open('users.json', 'w') as file:
-        #upload the chats list to the file
+    with open("users.json", "w") as file:
+        # upload the chats list to the file
         json.dump(users, file, default=lambda o: o.__dict__, indent=4)
-    with open('chats.json', 'w') as file:
+    with open("chats.json", "w") as file:
         json.dump(chats, file, default=lambda o: o.__dict__, indent=4)
 
+
 def LoadData():
-    with open('users.json', 'r') as file:
+    with open("users.json", "r") as file:
         users = json.load(file)
-    with open('chats.json', 'r') as file:
+    with open("chats.json", "r") as file:
         chats = json.load(file)
     return chats, users
 
 
-set = [-2,-4,1,3]
+set = [-2, -4, 1, 3]
 set.sort(key=lambda x: abs(x))
 print(set)
+
 
 def main():
     chats, users = LoadData()
@@ -138,5 +149,6 @@ def main():
             users[0].acceptRequest(users[1])
     """
     SaveData()
+
 
 # Create your models here.
