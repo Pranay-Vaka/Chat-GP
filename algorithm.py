@@ -17,12 +17,19 @@ class Person:
         self.city: str = city
         self.requestUsers = []
 
-    def sendMessage(self, message, chat):
+    def sendMessageToChat(self, message, chat):
         msg = message(message, self)
         chat.addMessage(msg)
 
-    def leaveChat(self, chat):
-        chat = None
+    def leaveChat(self, other):
+        for i in chats:
+            if (i.patient == self and i.advisor == other) or (i.advisor == self and i.patient == other):
+                chats.remove(i)
+        return chats
+
+    def sendMessageToGroupChat(self, message, groupChat):
+        msg = message(message, self)
+        groupChat.addMessage(msg)
 
     def sendRequest(self, desiredUser):
         desiredUser.requestUsers.append(self)
@@ -52,6 +59,20 @@ class Chat:
     def addMessage(self, message):
         self.messages.append(message)
 
+class GroupChat:
+    def __init__(self, users):
+        self.users = users
+        self.messages = []
+    
+    def addMessage(self, message):
+        self.messages.append(message)
+
+    def addUser(self, user):
+        self.users.append(user)
+
+    def removeUser(self, user):
+        self.users.remove(user)
+
 def compare(patient, advisor):
     score = 0
     if patient.condition == advisor.condition:
@@ -76,10 +97,9 @@ def compare(patient, advisor):
     
     return score
 
-
-
-users = []
-chats = []
+users = [Chat("buss", "ing")]
+chats = [Chat("buss", "ing"),  Chat("buss", "ing"), Chat("buss", "ing")]
+GroupChats = [GroupChat([Person("hi", "hi", 1, ["hi"], "hi", "hi", True, "hi"), Person("hi", "hi", 1, ["hi"], "hi", "hi", True, "hi")])]
 
 
 # Users is a list of objects of class Person, which need to be added to the file backup.json. Write a function SaveData that saves the users list to a file called backup.json. The function should take no arguments and return nothing.
@@ -90,42 +110,67 @@ def SaveData():
         json.dump(users, file, default=lambda o: o.__dict__, indent=4)
     with open('chats.json', 'w') as file:
         json.dump(chats, file, default=lambda o: o.__dict__, indent=4)
+    with open('groupchat.json', 'w') as file:
+        json.dump(GroupChats, file, default=lambda o: o.__dict__, indent=4)
 
 def LoadData():
     with open('users.json', 'r') as file:
         users = json.load(file)
     with open('chats.json', 'r') as file:
         chats = json.load(file)
-    return chats, users
+    with open('groupchat.json', 'r') as file:
+        GroupChats = json.load(file)
+    return chats, users, GroupChats
 
-set = [-2,-4,1,3]
-set.sort(key=lambda x: abs(x))
-print(set)
+def convertToChat(chat):
+    patient = convertToPerson(chat.get("patient"))
+    advisor = convertToPerson(chat.get("advisor"))
+    messages = chat.get("messages")
+    chat = Chat(patient, advisor)
+    chat.messages = messages
+    return chat    
 
-def main():
-    chats, users = LoadData()
-    print(chats)
-    print(users)
-    request = ""
+def convertToPerson(user):
+    name = user.get("name")
+    condition = user.get("condition")
+    age = user.get("age")
+
+    languages = user.get("languages")
+    nationality = user.get("nationality")
+    phoneNumber = user.get("phoneNumber")
+    ispatient = user.get("ispatient")
+    city = user.get("city")
+
+    person = Person(name, condition, age, languages, nationality, phoneNumber, ispatient, city)
+    return person
+
+def convertToGroupChat(gc):
+    x = gc.get("users")
+    users = []
+    for i in x:
+        users.append(convertToPerson(i))
+    messages = gc.get("messages")
+    groupChat = GroupChat(users)
+    groupChat.messages = messages
+    return groupChat
+
+def convert(chats, users, GroupChats):
+    newChats = []
+    newUsers = []
+    newGroupChats = []
+    for chat in chats:
+        newChats.append(convertToChat(chat))
+    for user in users:
+        newUsers.append(convertToPerson(user))
+    for groupChat in GroupChats:
+        newGroupChats.append(convertToGroupChat(groupChat))
     
-    """ 
-    if request == "send" and user == x and chat == y: 
-        if users[x].isPatient and chat.patient == users[x] or not users[x].isPatient and chat.advisor == users[x]:
-            users[x].sendMessage("Hello", chats[y])
-    elif request == "leave":
-        if chats[0].patient == users[0] or chats[0].advisor == users[0]:
-            users[0].leaveChat(chats[0])
-    elif request == "join":
-        if users[0].ispatient != users[1].ispatient:
-            users[x].sendRequest(users[y])
-    elif request == "remove":
-        if users[0].ispatient != users[1].ispatient and users[0].requestUsers[0] == users[1]:
-            users[x].removeRequest(users[y])
-    elif request == "retract":
-        if users[0].ispatient != users[1].ispatient and users[0].requestUsers[0] == users[1]:
-            users[x].retractRequest(users[y])
-    elif request == "accept":
-        if users[0].ispatient != users[1].ispatient and users[0].requestUsers[0] == users[1]:
-            users[0].acceptRequest(users[1]) 
-    """
-    SaveData()
+    return newChats, newUsers, newGroupChats
+
+
+# def main():
+#     c, u, g = LoadData()
+#     SaveData()
+#     c1, u1, g1 = convert(c, u, g)
+    
+# main() 
