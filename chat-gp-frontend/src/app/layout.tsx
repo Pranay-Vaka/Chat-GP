@@ -10,15 +10,15 @@ export const metadata: Metadata = {
   description: "Chat with a GP",
 };
 
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className + "bg-slate-200 p-0"}>
-        <div className="absolute w-full h-full bg-slate-200 -z-10"></div>
+    <html lang="en" data-theme="cupcake">
+      <body className={inter.className}>
         <Navbar />
         {children}
       </body>

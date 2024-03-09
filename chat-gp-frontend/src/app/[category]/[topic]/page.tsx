@@ -1,20 +1,23 @@
-"use client"
-
-import { topics } from '@/constants'
-import { usePathname } from 'next/navigation'
 import React from 'react'
+import { getAllMessages, getAllPosts, getForumByName } from '@/api'
+import AddPost from './AddPost'
+import ChatSection from './ChatSection'
 
 type PageParams = {
   params: {
-    topic: string
+    topic: string,
+    category: string
   }
 }
 
-const TopicPage = ({ params: { topic } }: PageParams) => {
-  const pathName = usePathname()
-  const topicData = topics.find(x => "/" + x.path === pathName)
+const TopicPage = async ({ params: { topic, category } }: PageParams) => {
+  console.log("topic:", topic, "category:", category);
 
-  if (!topicData) {
+  const messageData = await getAllMessages(category, topic);
+  const postData = await getAllPosts(category, topic);
+  const forumData = await getForumByName(category, topic);
+
+  if (!forumData.ok || !messageData.ok || !postData.ok) {
     return (
       <>
         <main className="w-full h-full grid place-items-center">
@@ -25,44 +28,51 @@ const TopicPage = ({ params: { topic } }: PageParams) => {
     )
   }
 
-  return (
-    <main className="w-full h-full grid place-items-center grid-cols-[4fr,3fr] gap-10 p-10">
+  const messages = messageData.messages;
+  const posts = postData.posts;
+  const forum = forumData.forums[0];
 
-      <section>
-        <div className="card w-full bg-slate-100 shadow-xl">
-          <figure><img src={topicData.image} className='w-full h-64' alt={topicData.name} /></figure>
+  return (
+    <main className="w-full h-full grid place-items-start grid-cols-[4fr,3fr] gap-5 p-10">
+
+      <section className='w-full h-full flex flex-col gap-5'>
+
+        <div className="card w-full shadow-xl">
+          <figure><img src={forum.fields.image} className='w-full h-64' alt={forum.fields.name} /></figure>
           <div className="card-body">
-            <h2 className="card-title text-black">{topicData.name}</h2>
+            <h2 className="card-title text-black">{forum.fields.name}</h2>
             <div className="text-sm breadcrumbs">
               <ul>
-                <li><a href={"/" + topicData.path.split("/", 1)[0]}>{topicData.parent}</a></li>
-                <li>{topicData.name}</li>
+                <li><a href={`/${category}`}>{category}</a></li>
+                <li>{topic.split("%20").join(" ")}</li>
               </ul>
             </div>
-            <p>Heart disease, or cardiovascular disease, encompasses various conditions affecting the heart and blood vessels, often leading to severe complications. It's a major cause of mortality globally. Types include coronary artery disease, heart failure, arrhythmias, and congenital defects. Risk factors include unhealthy habits like smoking, poor diet, lack of exercise, and underlying conditions such as hypertension, diabetes, and obesity. Symptoms range from chest pain and shortness of breath to fatigue and swelling. Early detection and management, including lifestyle changes, medication, and sometimes surgery, are crucial for better outcomes and quality of life.</p>
+            <p>{forum.fields.description}</p>
           </div>
         </div>
+
+        <AddPost />
+
+        {posts.map((post) => (
+          <div className="card w-full bg-base-100 shadow-xl">
+            <div className="card-body">
+              <h2 className="card-title">{post.fields.title}</h2>
+              <p>{post.fields.content}</p>
+              <div className="card-actions text-right justify-end">
+                <p className='text-sm'><span className='font-bold'>salmana</span> at {new Date(post.fields.time_stamp).toLocaleDateString()}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+
       </section>
 
-      <section className='w-full h-full'>
-        <div className='card w-full h-full bg-slate-100 shadow-xl'>
-          <div className='card-body'>
-            <h2 className='card-title text-black'>Chat</h2>
-
-            <div className="chat chat-start">
-              <div className="chat-bubble bg-slate-200 text-black">It's over Anakin, <br />I have the high ground.</div>
-            </div>
-            <div className="chat chat-end">
-              <div className="chat-bubble bg-blue-500 text-white">You underestimate my power!</div>
-            </div>
-
-            <div className='mt-auto'></div>
-            <input type="text" placeholder="Send a message" className="input bg-white outline-none text-black ring-0 input-bordered w-full" />
-          </div>
-        </div>
+      <section className='w-full sticky top-10'>
+        <ChatSection messagesData={messages} topic={topic} />
       </section>
     </main>
   )
 }
 
 export default TopicPage;
+

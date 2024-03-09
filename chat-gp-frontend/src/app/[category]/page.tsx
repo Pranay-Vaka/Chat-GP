@@ -1,16 +1,15 @@
 import React from 'react'
-import { categories, topics } from '@/constants'
+import { getAllForums } from "@/api";
 
 type PageParams = {
   params: {
     category: string
   }
 }
+const CategoryPage = async ({ params: { category } }: PageParams) => {
+  const forumsResponse = await getAllForums(category);
 
-const CategoryPage = ({ params: { category } }: PageParams) => {
-  const categoryData = categories.find(x => x.path === category)
-
-  if (!categoryData) {
+  if (!forumsResponse.ok) {
     return (
       <>
         <main className="w-full h-full grid place-items-center">
@@ -21,24 +20,24 @@ const CategoryPage = ({ params: { category } }: PageParams) => {
     )
   }
 
-  const categoryTopics = topics.filter(x => x.parent === categoryData.name);
+  const forums = forumsResponse.forums;
 
   return (
     <>
       <main className="w-full h-full grid place-items-center">
-        <h2 className="text-black font-bold text-3xl mt-10">{categoryData.name}</h2>
+        <h2 className="text-black font-bold text-3xl mt-10">{category}</h2>
         <p>Explore these topics</p>
 
         <div className="flex justify-center items-center gap-5 mt-7">
 
-          {categoryTopics.map((categoryTopic) => (
-            <div className="card bg-slate-100 w-72 shadow-xl">
-              <figure><img src={categoryTopic.image} alt={categoryTopic.name} /></figure>
+          {forums.map((forum) => (
+            <div className="card w-72 shadow-xl">
+              <figure><img src={forum.fields.image} alt={forum.fields.name} /></figure>
               <div className="card-body">
-                <h3 className="card-title text-black">{categoryTopic.name}</h3>
-                <p className="text-slate-600">Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.</p>
+                <h3 className="card-title text-black">{forum.fields.name}</h3>
+                <p className="text-slate-600">{forum.fields.description}</p>
                 <div className="card-actions justify-end">
-                  <a href={categoryTopic.path} className="btn btn-primary text-white">Explore</a>
+                  <a href={`${category}/${forum.fields.name}`} className="btn btn-primary text-white">Explore</a>
                 </div>
               </div>
             </div>
@@ -51,3 +50,4 @@ const CategoryPage = ({ params: { category } }: PageParams) => {
 }
 
 export default CategoryPage
+
