@@ -6,11 +6,14 @@ from django.contrib.auth.models import User
 class Category(models.Model):
     categories = models.Manager()
     name = models.CharField(max_length=100)
+    image = models.CharField(max_length=500)
+    description = models.CharField(max_length=1000, default="")
 
 
 class Forum(models.Model):
     forums = models.Manager()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    image = models.CharField(max_length=500)
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=1000)
 
@@ -19,6 +22,15 @@ class Message(models.Model):
     messages = models.Manager()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     forum = models.ForeignKey(Forum, on_delete=models.CASCADE)
+    content = models.CharField(max_length=4096)
+    time_stamp = models.DateTimeField(auto_now_add=True)
+
+
+class Post(models.Model):
+    posts = models.Manager()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    forum = models.ForeignKey(Forum, on_delete=models.CASCADE)
+    title = models.CharField(max_length=500, default="No title")
     content = models.CharField(max_length=4096)
     time_stamp = models.DateTimeField(auto_now_add=True)
 

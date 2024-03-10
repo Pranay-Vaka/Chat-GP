@@ -11,7 +11,7 @@ export default async function Home() {
         <div className="flex justify-center items-center gap-5 mt-7">
 
           {categories.map((category) => (
-            <div key={category.pk} className="card w-72 shadow-xl">
+            <div key={category.pk} className="card w-72 min-h-[35rem] shadow-xl">
               <figure><img src={category.fields.image} alt={category.fields.name} /></figure>
               <div className="card-body">
                 <h3 className="card-title text-black">{category.fields.name}</h3>

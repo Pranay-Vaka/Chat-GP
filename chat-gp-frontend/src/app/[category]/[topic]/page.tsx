@@ -1,7 +1,8 @@
 import React from 'react'
 import { getAllMessages, getAllPosts, getForumByName } from '@/api'
-import AddPost from './AddPost'
 import ChatSection from './ChatSection'
+import PostSection from './PostSection'
+import { Toaster } from "react-hot-toast"
 
 type PageParams = {
   params: {
@@ -51,23 +52,11 @@ const TopicPage = async ({ params: { topic, category } }: PageParams) => {
           </div>
         </div>
 
-        <AddPost />
-
-        {posts.map((post) => (
-          <div className="card w-full bg-base-100 shadow-xl">
-            <div className="card-body">
-              <h2 className="card-title">{post.fields.title}</h2>
-              <p>{post.fields.content}</p>
-              <div className="card-actions text-right justify-end">
-                <p className='text-sm'><span className='font-bold'>salmana</span> at {new Date(post.fields.time_stamp).toLocaleDateString()}</p>
-              </div>
-            </div>
-          </div>
-        ))}
+        <PostSection postsData={posts} />
 
       </section>
 
-      <section className='w-full sticky top-10'>
+      <section className='w-full sticky top-5'>
         <ChatSection messagesData={messages} topic={topic} />
       </section>
     </main>

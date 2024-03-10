@@ -1,0 +1,6 @@
+[tool.pyright]
+include = ["chat_gp", "chat_gp_backend", "django"]
+
+[tool.pyright.dependencies]
+python = "*"
+django = "lib/python3.11/site-packages/django"

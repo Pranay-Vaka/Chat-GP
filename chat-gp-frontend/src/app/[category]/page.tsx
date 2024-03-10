@@ -31,7 +31,7 @@ const CategoryPage = async ({ params: { category } }: PageParams) => {
         <div className="flex justify-center items-center gap-5 mt-7">
 
           {forums.map((forum) => (
-            <div className="card w-72 shadow-xl">
+            <div className="card w-72 min-h-[40rem] shadow-xl">
               <figure><img src={forum.fields.image} alt={forum.fields.name} /></figure>
               <div className="card-body">
                 <h3 className="card-title text-black">{forum.fields.name}</h3>

@@ -15,6 +15,8 @@ const ChatSection: FC<Props> = ({ messagesData, topic }) => {
   const sendMessage: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
 
+    if (input.trim() === "") return;
+
     setMessages([...messages, {
       model: "chat-gp.message",
       pk: messages.length + 1,
